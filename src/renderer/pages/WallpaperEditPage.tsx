@@ -606,9 +606,11 @@ const WallpaperEditPage: React.FC = () => {
               handleMouseMoveHover(e)
             }}
             onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
+            onMouseLeave={(e) => {
+              handleMouseUp(e)
+              setIsHoveringCanvas(false)
+            }}
             onMouseEnter={() => setIsHoveringCanvas(true)}
-            onMouseLeave={() => setIsHoveringCanvas(false)}
             className="edit-canvas"
           />
         )}
