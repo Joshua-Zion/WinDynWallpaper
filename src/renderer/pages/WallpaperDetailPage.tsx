@@ -190,7 +190,7 @@ const WallpaperDetailPage: React.FC = () => {
   }
 
   return (
-    <div className="page-container">
+    <div className="page-container detail-page">
       {/* 顶部操作栏 */}
       <div className="detail-toolbar">
         <button className="toolbar-btn" onClick={() => navigate('/library')}>
@@ -217,8 +217,10 @@ const WallpaperDetailPage: React.FC = () => {
         </button>
       </div>
 
-      {/* 预览区域 */}
-      <div className="detail-preview">
+      {/* 内容区域 - 可滚动 */}
+      <div className="detail-content">
+        {/* 预览区域 */}
+        <div className="detail-preview">
         {wallpaper.type === 'static' ? (
           <img
             src={`file://${wallpaper.localPath}`}
@@ -286,6 +288,7 @@ const WallpaperDetailPage: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
 
       {/* 重命名弹窗 */}
       {showRenameDialog && (

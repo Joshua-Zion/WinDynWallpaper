@@ -2113,6 +2113,31 @@ button {
 /*───────────────────────────────────────────────────────────────────
    22-5. 壁纸详情页
    ───────────────────────────────────────────────────────────────────*/
+.detail-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.detail-page .detail-toolbar {
+  flex-shrink: 0;
+  margin-bottom: 0;
+  padding-bottom: var(--space-md);
+}
+
+.detail-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.detail-content::-webkit-scrollbar {
+  display: none;
+}
+
 .detail-toolbar {
   display: flex;
   align-items: center;
