@@ -485,19 +485,19 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-md) var(--space-lg);
-  background: var(--bg-card);
-  box-shadow: var(--shadow-out);
-  border-radius: var(--radius-lg);
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  box-shadow: var(--shadow-in-xs);
+  border-radius: var(--radius-sm);
   margin-bottom: var(--space-lg);
-  gap: var(--space-md);
+  gap: var(--space-sm);
   flex-wrap: wrap;
 }
 
 .toolbar-left {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: 8px;
   flex: 1;
   min-width: 0;
 }
@@ -505,7 +505,7 @@ body {
 .toolbar-right {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: 8px;
   flex-shrink: 0;
 }
 
@@ -520,53 +520,60 @@ body {
    9. 输入控件
    ───────────────────────────────────────────────────────────────────*/
 .search-input {
-  padding: 12px 16px;
+  padding: 7px 12px 7px 32px;
   border: none;
-  border-radius: var(--radius-md);
-  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
   color: var(--text-primary);
-  font-size: var(--text-base);
+  font-size: 13px;
   font-family: inherit;
-  width: 260px;
-  box-shadow: var(--shadow-in-sm);
-  transition: var(--transition-normal);
+  width: 200px;
+  box-shadow: var(--shadow-in-xs);
+  transition: var(--transition-fast);
 }
 
 .search-input:focus {
   outline: none;
-  box-shadow: var(--shadow-in);
+  box-shadow: var(--shadow-in-sm);
 }
 
 .search-input::placeholder {
   color: var(--text-tertiary);
+  font-size: 13px;
 }
 
-.select-dropdown {
-  padding: 12px 16px;
+/* 下拉选择 - 统一 */
+.select-dropdown,
+.filter-select,
+.sort-select {
+  padding: 7px 30px 7px 12px;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   background: var(--bg-card);
   color: var(--text-primary);
-  font-size: var(--text-base);
+  font-size: 13px;
   font-family: inherit;
-  box-shadow: var(--shadow-out-sm);
+  box-shadow: var(--shadow-out-xs);
   cursor: pointer;
-  transition: var(--transition-normal);
-  min-width: 140px;
+  transition: var(--transition-fast);
+  min-width: auto;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23718096' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23718096' d='M5 7L1 3h8z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 36px;
+  background-position: right 10px center;
 }
 
-.select-dropdown:hover {
-  box-shadow: var(--shadow-out);
+.select-dropdown:hover,
+.filter-select:hover,
+.sort-select:hover {
+  box-shadow: var(--shadow-out-sm);
 }
 
-.select-dropdown:focus {
+.select-dropdown:focus,
+.filter-select:focus,
+.sort-select:focus {
   outline: none;
-  box-shadow: var(--shadow-out), 0 0 0 2px var(--accent-glow);
+  box-shadow: var(--shadow-out-sm), 0 0 0 2px var(--accent-glow);
 }
 
 /*───────────────────────────────────────────────────────────────────
@@ -884,131 +891,299 @@ button {
 }
 
 /* 壁纸卡片 */
+/* 壁纸卡片 - 参考设计 */
 .wallpaper-card {
   position: relative;
   background: var(--bg-card);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   overflow: hidden;
   box-shadow: var(--shadow-out-sm);
-  transition: var(--transition-normal);
-  cursor: pointer;
+  transition: box-shadow var(--transition-normal);
 }
 
 .wallpaper-card:hover {
   box-shadow: var(--shadow-out);
-  transform: translateY(-4px);
 }
 
-.wallpaper-card:active {
-  transform: translateY(-2px);
+/* 复选框 */
+.card-checkbox {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid white;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  opacity: 0;
+  pointer-events: none;
 }
 
-.wallpaper-card.selected {
-  box-shadow: var(--shadow-in-sm), 0 0 0 3px var(--accent);
+.wallpaper-card:hover .card-checkbox,
+.card-checkbox.checked {
+  opacity: 1;
+  pointer-events: auto;
 }
 
-.wallpaper-card-img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
+.card-checkbox.checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.card-checkbox.checked::after {
+  content: '✓';
   display: block;
-  background: var(--bg-primary);
+  text-align: center;
+  color: white;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 18px;
 }
 
-.wallpaper-card-body {
-  padding: var(--space-md);
+/* 图片区域 4:3 */
+.card-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--bg-tertiary);
+  cursor: pointer;
 }
 
-.wallpaper-card-name {
-  font-size: var(--text-base);
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.wallpaper-card:hover .card-image img {
+  transform: scale(1.05);
+}
+
+.no-preview {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  background: var(--bg-tertiary);
+}
+
+.current-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  z-index: 5;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* 卡片信息区域 */
+.card-body {
+  padding: 14px 16px 16px;
+}
+
+.card-name {
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: var(--space-xs);
+  margin: 0 0 10px;
 }
 
-.wallpaper-card-meta {
+/* 标签行 */
+.card-tags {
   display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  font-size: var(--text-xs);
-  color: var(--text-tertiary);
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
 }
 
-.wallpaper-card-meta span {
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.tag-type.static {
+  background: #e8f0fe;
+  color: #1a73e8;
+}
+
+.tag-type.dynamic {
+  background: #fce8ec;
+  color: #e91e63;
+}
+
+.tag-resolution {
+  background: #e6f4ea;
+  color: #1e8e3e;
+}
+
+.tag-ratio {
+  background: #f3e8fd;
+  color: #8430ce;
+}
+
+.tag-size {
+  background: #fef3e2;
+  color: #e65100;
+}
+
+/* 暗色主题标签 */
+[data-theme="dark"] .tag-type.static {
+  background: rgba(26, 115, 232, 0.15);
+  color: #82b1ff;
+}
+
+[data-theme="dark"] .tag-type.dynamic {
+  background: rgba(233, 30, 99, 0.15);
+  color: #ff80ab;
+}
+
+[data-theme="dark"] .tag-resolution {
+  background: rgba(30, 142, 62, 0.15);
+  color: #81c995;
+}
+
+[data-theme="dark"] .tag-ratio {
+  background: rgba(132, 48, 206, 0.15);
+  color: #ce93d8;
+}
+
+[data-theme="dark"] .tag-size {
+  background: rgba(230, 81, 0, 0.15);
+  color: #ffb74d;
+}
+
+/* 操作按钮 */
+.card-buttons {
   display: flex;
-  align-items: center;
-  gap: 4px;
+  gap: 8px;
 }
 
-/* 复选框 */
-.checkbox-wrapper {
-  position: absolute;
-  top: var(--space-sm);
-  left: var(--space-sm);
-  z-index: 10;
-}
-
-.checkbox-wrapper input[type="checkbox"] {
-  width: 22px;
-  height: 22px;
-  cursor: pointer;
-  accent-color: var(--accent);
-  border-radius: 6px;
-  border: 2px solid var(--bg-card);
-  box-shadow: var(--shadow-out-xs);
-  background: var(--bg-card);
-  padding: 0;
-  appearance: none;
-  -webkit-appearance: none;
-  transition: var(--transition-fast);
-}
-
-.checkbox-wrapper input[type="checkbox"]:checked {
+.btn-apply {
+  flex: 1;
+  padding: 6px 0;
   background: var(--accent);
-  border-color: var(--accent);
-}
-
-.checkbox-wrapper input[type="checkbox"]:checked::after {
-  content: '✓';
-  display: block;
-  text-align: center;
   color: white;
-  font-size: 14px;
-  font-weight: bold;
-  line-height: 18px;
-}
-
-/* 选中遮罩 */
-.selection-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--accent-glow);
-  pointer-events: none;
-  opacity: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
   transition: var(--transition-fast);
 }
 
-.wallpaper-card.selected .selection-overlay {
-  opacity: 1;
+.btn-apply:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.btn-apply:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--text-tertiary);
+}
+
+.btn-del {
+  width: 34px;
+  min-width: 34px;
+  padding: 0;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.btn-del:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.btn-del:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* 选中态 */
+.wallpaper-card.selected {
+  box-shadow: var(--shadow-out), 0 0 0 2px var(--accent);
+}
+
+
+
+/*───────────────────────────────────────────────────────────────────
+   12. Tab 标签栏
+   ───────────────────────────────────────────────────────────────────*/
+.tab-bar {
+  display: inline-flex;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  gap: 2px;
+  box-shadow: var(--shadow-in-xs);
+  margin-bottom: var(--space-md);
+}
+
+.tab {
+  padding: 7px 20px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  white-space: nowrap;
+}
+
+.tab:hover:not(.active) {
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.4);
+}
+
+[data-theme="dark"] .tab:hover:not(.active) {
+  background: rgba(255,255,255,0.06);
+}
+
+.tab.active {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-out-sm);
+  font-weight: 600;
 }
 
 /*───────────────────────────────────────────────────────────────────
-   12. 批量操作信息
+   13. 批量操作信息
    ───────────────────────────────────────────────────────────────────*/
 .batch-info {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  padding: var(--space-sm) var(--space-md);
-  background: var(--accent-light);
+  font-size: 12px;
   color: var(--accent);
+  padding: 3px 10px;
+  background: var(--accent-light);
   border-radius: var(--radius-full);
   font-weight: 500;
+  white-space: nowrap;
 }
 
 /*───────────────────────────────────────────────────────────────────
@@ -1018,75 +1193,82 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-xs);
-  padding: var(--space-lg) 0;
+  gap: 6px;
+  padding: var(--space-sm) 0;
 }
 
 .page-btn {
-  min-width: 36px;
-  height: 36px;
-  padding: 0 var(--space-sm);
+  min-width: 32px;
+  height: 32px;
+  padding: 0 6px;
   background: var(--bg-card);
-  color: var(--text-primary);
+  color: var(--text-secondary);
   border: none;
   border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-out-sm);
-  font-size: var(--text-sm);
+  box-shadow: var(--shadow-out-xs);
+  font-size: 13px;
   font-weight: 500;
-  transition: var(--transition-normal);
+  transition: var(--transition-fast);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .page-btn:hover:not(:disabled) {
-  box-shadow: var(--shadow-out);
   color: var(--accent);
+  box-shadow: var(--shadow-out-sm);
 }
 
 .page-btn:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
 .page-num {
-  min-width: 36px;
-  height: 36px;
-  padding: 0 var(--space-sm);
+  min-width: 32px;
+  height: 32px;
+  padding: 0 4px;
   background: var(--bg-card);
   color: var(--text-secondary);
   border: none;
   border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-out-sm);
-  font-size: var(--text-sm);
+  box-shadow: var(--shadow-out-xs);
+  font-size: 13px;
   font-weight: 500;
-  transition: var(--transition-normal);
+  transition: var(--transition-fast);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.page-num:hover {
-  color: var(--text-primary);
-  box-shadow: var(--shadow-out);
+.page-num:hover:not(.active) {
+  color: var(--accent);
+  box-shadow: var(--shadow-out-sm);
 }
 
 .page-num.active {
   background: var(--accent);
-  color: var(--text-inverse);
-  box-shadow: var(--shadow-accent);
+  color: white;
+  box-shadow: 0 2px 8px rgba(var(--accent-rgb, 99,102,241), 0.35);
+}
+
+.page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .page-ellipsis {
   color: var(--text-tertiary);
-  padding: 0 var(--space-xs);
-  font-size: var(--text-sm);
+  padding: 0 4px;
+  font-size: 12px;
+  letter-spacing: 2px;
 }
 
 .page-info {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  margin-left: var(--space-md);
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-left: 8px;
   white-space: nowrap;
 }
 
@@ -1820,6 +2002,55 @@ button {
   to {
     transform: rotate(360deg);
   }
+}
+
+.confirm-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-overlay);
+}
+
+.confirm-dialog {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  min-width: 360px;
+  max-width: 440px;
+  box-shadow: var(--shadow-out-lg);
+  animation: dialog-in 0.2s ease-out;
+}
+
+@keyframes dialog-in {
+  from { opacity: 0; transform: scale(0.95) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.confirm-dialog-header h3 {
+  margin: 0 0 var(--space-sm) 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.confirm-dialog-body {
+  margin-bottom: var(--space-md);
+}
+
+.confirm-dialog-body p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.confirm-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
 }
 
 .loading-overlay {

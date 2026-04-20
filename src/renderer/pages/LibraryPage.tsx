@@ -317,22 +317,20 @@ const LibraryPage: React.FC = () => {
               {currentWallpapers.map(item => (
                 <div
                   key={item.id}
-                  className={`wallpaper-card ${currentWallpaperId === item.id ? 'active' : ''} ${selectedIds.has(item.id) ? 'selected' : ''}`}
+                  className={`wallpaper-card ${selectedIds.has(item.id) ? 'selected' : ''}`}
                   onMouseEnter={() => setHoveredCardId(item.id)}
                   onMouseLeave={() => setHoveredCardId(null)}
                 >
-                  {(hoveredCardId === item.id || selectedIds.has(item.id)) && (
-                    <div className="checkbox" onClick={(e) => e.stopPropagation()}>
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.has(item.id)}
-                        onChange={() => handleSelectOne(item.id)}
-                      />
-                    </div>
-                  )}
-                  <div className="thumbnail" onClick={() => navigate(`/library/${item.id}`)}>
+                  {/* 复选框 */}
+                  <div
+                    className={`card-checkbox ${selectedIds.has(item.id) ? 'checked' : ''}`}
+                    onClick={(e) => { e.stopPropagation(); handleSelectOne(item.id) }}
+                  />
+
+                  {/* 图片区域 4:3 */}
+                  <div className="card-image" onClick={() => navigate(`/library/${item.id}`)}>
                     {currentWallpaperId === item.id && (
-                      <span className="current-badge">当前</span>
+                      <span className="current-badge">当前使用</span>
                     )}
                     {item.thumbnailPath ? (
                       <img
@@ -344,32 +342,34 @@ const LibraryPage: React.FC = () => {
                       <div className="no-preview">{item.type === 'static' ? '🖼️' : '🎬'}</div>
                     )}
                   </div>
-                  <div className="card-info">
-                    <div className="card-title" title={item.name}>{item.name}</div>
+
+                  {/* 卡片信息 */}
+                  <div className="card-body">
+                    <h3 className="card-name" title={item.name}>{item.name}</h3>
                     <div className="card-tags">
                       <span className={`tag tag-type ${item.type}`}>
                         {item.type === 'static' ? '静态' : '动态'}
                       </span>
                       {item.resolutionTier && <span className="tag tag-resolution">{item.resolutionTier}</span>}
                       {item.aspectRatio && <span className="tag tag-ratio">{item.aspectRatio}</span>}
+                      <span className="tag tag-size">{formatSize(item.fileSize)}</span>
                     </div>
-                    <div className="card-date">{formatDate(item.addedAt)} · {formatSize(item.fileSize)}</div>
-                  </div>
-                  <div className="card-actions">
-                    <button
-                      onClick={() => handleApply(item)}
-                      disabled={isLoading || currentWallpaperId === item.id}
-                      className="btn btn-primary"
-                    >
-                      应用
-                    </button>
-                    <button
-                      onClick={() => handleRemove(item.id)}
-                      disabled={isLoading || currentWallpaperId === item.id}
-                      className="btn btn-danger"
-                    >
-                      删除
-                    </button>
+                    <div className="card-buttons">
+                      <button
+                        className="btn btn-sm btn-apply"
+                        onClick={() => handleApply(item)}
+                        disabled={isLoading || currentWallpaperId === item.id}
+                      >
+                        {currentWallpaperId === item.id ? '使用中' : '应用'}
+                      </button>
+                      <button
+                        className="btn btn-sm btn-del"
+                        onClick={() => handleRemove(item.id)}
+                        disabled={isLoading || currentWallpaperId === item.id}
+                      >
+                        ✕
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}

@@ -203,7 +203,7 @@ function createWindow(): void {
   mainWindow.on('ready-to-show', () => {
     mainWindow!.show()
     // DEBUG
-    mainWindow!.webContents.openDevTools()
+    // mainWindow!.webContents.openDevTools()
   })
 
   // 关闭按钮 → 隐藏窗口，最小化到托盘
