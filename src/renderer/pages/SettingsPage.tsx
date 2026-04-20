@@ -180,13 +180,15 @@ const SettingsPage: React.FC = () => {
             <div className="setting-info">
               <div className="setting-label">壁纸存储目录</div>
               <div className="setting-desc">壁纸文件的存储位置，修改后将自动扫描新目录</div>
-              <div className="dir-path-box">
-                <span className="dir-path-text">{wallpaperDir.currentDir || '加载中...'}</span>
+              <div className="dir-path-row">
+                <div className="dir-path-box">
+                  <span className="dir-path-text">{wallpaperDir.currentDir || '加载中...'}</span>
+                </div>
+                <button className="btn btn-primary dir-btn" onClick={handleSelectDir} disabled={dirLoading}>
+                  {dirLoading ? '处理中...' : '修改目录'}
+                </button>
               </div>
             </div>
-            <button className="btn-primary dir-btn" onClick={handleSelectDir} disabled={dirLoading}>
-              {dirLoading ? '处理中...' : '修改目录'}
-            </button>
           </div>
 
           {/* 开机自启 */}
@@ -232,11 +234,11 @@ const SettingsPage: React.FC = () => {
             {lastChecked && <span className="last-checked">上次检查: {lastChecked}</span>}
           </div>
           <div className="section-actions">
-            <button className="btn-secondary" onClick={loadDependencies} disabled={loading}>
+            <button className="btn btn-neutral" onClick={loadDependencies} disabled={loading}>
               {loading ? '检查中...' : '重新检查'}
             </button>
             <button
-              className="btn-primary"
+              className="btn btn-primary"
               onClick={handleInstallAll}
               disabled={loading || (deps.length > 0 && deps.every(d => d.installed))}
             >
@@ -262,15 +264,18 @@ const SettingsPage: React.FC = () => {
                     {dep.installed && dep.version && (
                       <div className="dep-version">v{dep.version}</div>
                     )}
-                    {dep.installed && dep.path && (
-                      <div className="dep-path" title={dep.path}>{dep.path}</div>
-                    )}
+                    <div className="dep-path-row">
+                      {dep.installed && dep.path && (
+                        <div className="dep-path-box" title={dep.path}>{dep.path}</div>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div className="dep-actions">
+
+                <div className="dep-btn-group">
                   {!dep.installed ? (
                     <button
-                      className="btn-install"
+                      className="btn btn-install"
                       onClick={() => doAction('install', dep.name)}
                       disabled={actionDep === dep.name}
                     >
@@ -279,14 +284,14 @@ const SettingsPage: React.FC = () => {
                   ) : (
                     <>
                       <button
-                        className="btn-repair"
+                        className="btn btn-repair"
                         onClick={() => doAction('repair', dep.name)}
                         disabled={actionDep === dep.name}
                       >
                         {actionDep === dep.name ? '修复中...' : '修复'}
                       </button>
                       <button
-                        className="btn-uninstall"
+                        className="btn btn-uninstall"
                         onClick={() => doAction('uninstall', dep.name)}
                         disabled={actionDep === dep.name}
                       >

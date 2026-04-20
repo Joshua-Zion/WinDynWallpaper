@@ -297,7 +297,7 @@ const LibraryPage: React.FC = () => {
               {selectedIds.size > 0 && <option value="clear">取消选择</option>}
               {selectedIds.size > 0 && <option value="invert">反选</option>}
             </select>
-            <button className="btn-danger" onClick={handleBatchDelete} disabled={isLoading || selectedIds.size === 0}>
+            <button className="btn btn-danger" onClick={handleBatchDelete} disabled={isLoading || selectedIds.size === 0}>
               删除
             </button>
           </div>
@@ -359,14 +359,14 @@ const LibraryPage: React.FC = () => {
                     <button
                       onClick={() => handleApply(item)}
                       disabled={isLoading || currentWallpaperId === item.id}
-                      className="btn-primary"
+                      className="btn btn-primary"
                     >
                       应用
                     </button>
                     <button
                       onClick={() => handleRemove(item.id)}
                       disabled={isLoading || currentWallpaperId === item.id}
-                      className="btn-danger"
+                      className="btn btn-danger"
                     >
                       删除
                     </button>

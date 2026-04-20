@@ -228,7 +228,7 @@ const WallpaperDetailPage: React.FC = () => {
         <div className="detail-info-panel">
           <div className="info-panel-header">
             <h2>壁纸信息</h2>
-            <button className="btn-close" onClick={() => setShowInfo(false)}>×</button>
+            <button className="btn btn-close" onClick={() => setShowInfo(false)}>×</button>
           </div>
           <div className="info-panel-content">
             <div className="info-item">
@@ -282,7 +282,7 @@ const WallpaperDetailPage: React.FC = () => {
           <div className="dialog-content-rename">
             <div className="dialog-header-rename">
               <h3>重命名壁纸</h3>
-              <button className="btn-close" onClick={handleRenameCancel}>×</button>
+              <button className="btn btn-close" onClick={handleRenameCancel}>×</button>
             </div>
             <div className="dialog-body-rename">
               <div className="rename-input-wrapper">
@@ -303,8 +303,8 @@ const WallpaperDetailPage: React.FC = () => {
               </div>
             </div>
             <div className="dialog-footer-rename">
-              <button className="btn-cancel" onClick={handleRenameCancel}>取消</button>
-              <button className="btn-confirm" onClick={handleRenameConfirm}>确定</button>
+              <button className="btn btn-cancel" onClick={handleRenameCancel}>取消</button>
+              <button className="btn btn-confirm" onClick={handleRenameConfirm}>确定</button>
             </div>
           </div>
         </div>

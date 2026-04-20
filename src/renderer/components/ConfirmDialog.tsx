@@ -27,10 +27,10 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           <p>{message}</p>
         </div>
         <div className="confirm-dialog-footer">
-          <button className="btn-secondary" onClick={onCancel}>
+          <button className="btn btn-secondary" onClick={onCancel}>
             取消
           </button>
-          <button className="btn-danger" onClick={onConfirm}>
+          <button className="btn btn-danger" onClick={onConfirm}>
             确定
           </button>
         </div>

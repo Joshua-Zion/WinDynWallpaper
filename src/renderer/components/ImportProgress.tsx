@@ -55,7 +55,7 @@ const ImportProgress: React.FC<ImportProgressProps> = ({
           <div className="import-progress-dialog">
             <div className="import-progress-header">
               <h3>导入壁纸</h3>
-              <button className="btn-minimize" onClick={() => setIsMinimized(true)}>−</button>
+              <button className="btn btn-minimize" onClick={() => setIsMinimized(true)}>−</button>
             </div>
 
             <div className="import-progress-body">
@@ -89,9 +89,9 @@ const ImportProgress: React.FC<ImportProgressProps> = ({
             </div>
 
             <div className="import-progress-footer">
-              <button className="btn-minimize-footer" onClick={() => setIsMinimized(true)}>最小化</button>
+              <button className="btn btn-minimize-footer" onClick={() => setIsMinimized(true)}>最小化</button>
               {isCompleted && (
-                <button className="btn-close" onClick={onClose}>关闭</button>
+                <button className="btn btn-close" onClick={onClose}>关闭</button>
               )}
             </div>
           </div>
