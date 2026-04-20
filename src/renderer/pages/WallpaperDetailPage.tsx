@@ -185,10 +185,6 @@ const WallpaperDetailPage: React.FC = () => {
           <span>返回</span>
         </button>
         <div className="toolbar-spacer" />
-        <button className="toolbar-btn" onClick={() => setShowInfo(!showInfo)}>
-          <span className="toolbar-icon">ℹ️</span>
-          <span>信息</span>
-        </button>
         <button className="toolbar-btn" onClick={handleRename}>
           <span className="toolbar-icon">✏️</span>
           <span>重命名</span>
@@ -224,11 +220,9 @@ const WallpaperDetailPage: React.FC = () => {
       </div>
 
       {/* 信息面板 */}
-      {showInfo && (
-        <div className="detail-info-panel">
+      <div className="detail-info-panel">
           <div className="info-panel-header">
             <h2>壁纸信息</h2>
-            <button className="btn btn-close" onClick={() => setShowInfo(false)}>×</button>
           </div>
           <div className="info-panel-content">
             <div className="info-item">
@@ -274,7 +268,6 @@ const WallpaperDetailPage: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
 
       {/* 重命名弹窗 */}
       {showRenameDialog && (
