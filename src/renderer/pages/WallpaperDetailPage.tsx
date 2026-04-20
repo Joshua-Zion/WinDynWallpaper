@@ -28,6 +28,7 @@ const WallpaperDetailPage: React.FC = () => {
   const [showRenameDialog, setShowRenameDialog] = useState(false)
   const [fileNameWithoutExt, setFileNameWithoutExt] = useState('')
   const [fileExt, setFileExt] = useState('')
+  const [currentWallpaperId, setCurrentWallpaperId] = useState<string | null>(null)
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean
     title: string
@@ -42,7 +43,19 @@ const WallpaperDetailPage: React.FC = () => {
 
   useEffect(() => {
     loadWallpaperDetail()
+    loadCurrentWallpaper()
   }, [id])
+
+  const loadCurrentWallpaper = async () => {
+    try {
+      const current = await window.electronAPI.getCurrentWallpaper()
+      if (current?.id) {
+        setCurrentWallpaperId(current.id)
+      }
+    } catch (err) {
+      console.error('加载当前壁纸失败:', err)
+    }
+  }
 
   const loadWallpaperDetail = async () => {
     if (!id) return
@@ -193,7 +206,12 @@ const WallpaperDetailPage: React.FC = () => {
           <span className="toolbar-icon">🎨</span>
           <span>编辑</span>
         </button>
-        <button className="toolbar-btn btn-danger" onClick={handleDelete}>
+        <button
+          className="toolbar-btn btn-danger"
+          onClick={handleDelete}
+          disabled={currentWallpaperId === wallpaper?.id}
+          title={currentWallpaperId === wallpaper?.id ? '当前正在使用，无法删除' : ''}
+        >
           <span className="toolbar-icon">🗑️</span>
           <span>删除</span>
         </button>

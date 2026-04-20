@@ -22,6 +22,7 @@ interface WallpaperEntry {
 
 interface StoreConfig {
   wallpaperDir: string  // 自定义壁纸目录，若为空则用默认值
+  currentWallpaperId: string | null  // 当前应用的壁纸ID
 }
 
 /**
@@ -90,7 +91,7 @@ export class StoreManager {
         return cfg
       }
     } catch { /* ignore */ }
-    return { wallpaperDir: '' }
+    return { wallpaperDir: '', currentWallpaperId: null }
   }
 
   private saveConfig(): void {
@@ -631,5 +632,16 @@ export class StoreManager {
     }
 
     return { success: true, message: `已更新 ${updatedCount} 个壁纸`, updatedCount }
+  }
+
+  /** 设置当前壁纸ID */
+  setCurrentWallpaperId(id: string | null): void {
+    this.config.currentWallpaperId = id
+    this.saveConfig()
+  }
+
+  /** 获取当前壁纸ID */
+  getCurrentWallpaperId(): string | null {
+    return this.config.currentWallpaperId || null
   }
 }

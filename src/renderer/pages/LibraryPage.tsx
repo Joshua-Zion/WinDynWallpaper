@@ -122,7 +122,10 @@ const LibraryPage: React.FC = () => {
         ? await window.electronAPI.setStaticWallpaper(item.localPath)
         : await window.electronAPI.setDynamicWallpaper(item.localPath)
       toast[res.success ? 'success' : 'error'](res.message)
-      if (res.success) setCurrentWallpaperId(item.id)
+      if (res.success) {
+        setCurrentWallpaperId(item.id)
+        await window.electronAPI.setCurrentWallpaperId(item.id)
+      }
     } catch (err: any) {
       toast.error(`应用失败: ${err.message}`)
     }

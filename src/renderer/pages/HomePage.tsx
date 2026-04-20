@@ -133,6 +133,9 @@ const HomePage: React.FC = () => {
     setIsLoading(true)
     const res = await window.electronAPI.restoreDefault()
     toast[res.success ? 'success' : 'error'](res.message)
+    if (res.success) {
+      await window.electronAPI.setCurrentWallpaperId(null)
+    }
     setIsLoading(false)
   }
 

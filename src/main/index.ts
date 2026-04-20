@@ -246,15 +246,32 @@ function setupIpcHandlers(): void {
   })
 
   ipcMain.handle('wallpaper:get-current', async () => {
+    // 优先从配置中读取当前壁纸ID
+    const storedId = storeManager.getCurrentWallpaperId()
+    if (storedId) {
+      const wallpaper = storeManager.getWallpaperById(storedId)
+      if (wallpaper) {
+        return {
+          id: wallpaper.id,
+          path: wallpaper.localPath,
+          type: wallpaper.type
+        }
+      }
+    }
+    // 回退到旧逻辑：通过路径匹配
     const current = wallpaperManager.getCurrentWallpaper()
     if (!current) return null
-    // 查找对应的壁纸 ID
     const wallpapers = storeManager.getWallpapers()
     const found = wallpapers.find(w => w.localPath === current.path)
     return { ...current, id: found?.id || null }
   })
 
   // 壁纸库管理
+  ipcMain.handle('store:set-current-wallpaper-id', async (_e, id: string | null) => {
+    storeManager.setCurrentWallpaperId(id)
+    return { success: true }
+  })
+
   ipcMain.handle('store:add-wallpaper', async (_e, filePath: string, type: 'static' | 'dynamic') => {
     return storeManager.addWallpaper(filePath, type)
   })

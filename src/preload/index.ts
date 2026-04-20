@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   stopDynamicWallpaper: () => ipcRenderer.invoke('wallpaper:stop-dynamic'),
   restoreDefault: () => ipcRenderer.invoke('wallpaper:restore-default'),
   getCurrentWallpaper: () => ipcRenderer.invoke('wallpaper:get-current'),
+  setCurrentWallpaperId: (id: string | null) => ipcRenderer.invoke('store:set-current-wallpaper-id', id),
   getWallpapers: () => ipcRenderer.invoke('store:get-wallpapers'),
   getWallpaperById: (id: string) => ipcRenderer.invoke('store:get-wallpaper-by-id', id),
   renameWallpaper: (id: string, newName: string) => ipcRenderer.invoke('store:rename-wallpaper', id, newName),

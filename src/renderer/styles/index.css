@@ -2134,6 +2134,13 @@ button {
   opacity: 0.85;
 }
 
+.toolbar-btn:disabled,
+.toolbar-btn.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .toolbar-spacer {
   flex: 1;
 }
