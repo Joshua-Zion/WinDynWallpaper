@@ -1,6 +1,6 @@
 {
   "name": "dyn-wallpaper",
-  "version": "0.1.2",
+  "version": "0.2.1",
   "description": "DynWallpaper - 简洁高效的 Windows 动态壁纸管理工具，支持视频与静态图片",
   "main": "dist/main/index.js",
   "scripts": {
