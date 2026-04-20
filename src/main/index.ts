@@ -302,12 +302,14 @@ function setupIpcHandlers(): void {
   })
 
   // 目录选择对话框
-  ipcMain.handle('dialog:select-directory', async () => {
+  ipcMain.handle('dialog:select-directory', async (_e, defaultPath?: string) => {
     const { dialog } = require('electron')
     const result = await dialog.showOpenDialog(mainWindow!, {
-      properties: ['openDirectory']
+      properties: ['openDirectory'],
+      defaultPath
     })
-    return result
+    if (result.canceled || !result.filePaths.length) return null
+    return result.filePaths[0]
   })
 
   // 文件对话框（支持多选）

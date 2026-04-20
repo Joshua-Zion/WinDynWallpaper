@@ -3,7 +3,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 // 暴露完整的 API
 contextBridge.exposeInMainWorld('electronAPI', {
   openFile: (options) => ipcRenderer.invoke('dialog:open-file', options),
-  selectDirectory: () => ipcRenderer.invoke('dialog:select-directory'),
+  selectDirectory: (defaultPath?: string) => ipcRenderer.invoke('dialog:select-directory', defaultPath),
   addWallpaper: (filePath, type) => ipcRenderer.invoke('store:add-wallpaper', filePath, type),
   removeWallpaper: (id) => ipcRenderer.invoke('store:remove-wallpaper', id),
   setStaticWallpaper: (filePath) => ipcRenderer.invoke('wallpaper:set-static', filePath),

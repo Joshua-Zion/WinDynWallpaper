@@ -50,17 +50,12 @@ const SettingsPage: React.FC = () => {
   const handleSelectDir = async () => {
     setDirLoading(true)
     try {
-      const { dialog } = require('electron')
-      const result = await dialog.showOpenDialog({
-        properties: ['openDirectory'],
-        defaultPath: wallpaperDir.currentDir
-      })
+      const selectedDir = await window.electronAPI.selectDirectory(wallpaperDir.currentDir)
 
-      if (result.canceled || !result.filePaths || result.filePaths.length === 0) {
+      if (!selectedDir) {
         setDirLoading(false)
         return
       }
-      const selectedDir = result.filePaths[0]
 
       const setResult = await window.electronAPI.setWallpaperDir(selectedDir)
       if (!setResult.success) {
