@@ -8,21 +8,30 @@ const Layout: React.FC = () => {
         <nav className="sidebar">
           <ul className="nav-menu">
             <li>
-              <NavLink to="/" className={({ isActive }) => isActive ? 'active' : ''}>
+              <NavLink
+                to="/"
+                className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+              >
                 <span className="nav-icon">🏠</span>
-                <span>首页</span>
+                <span className="nav-text">首页</span>
               </NavLink>
             </li>
             <li>
-              <NavLink to="/library" className={({ isActive }) => isActive ? 'active' : ''}>
+              <NavLink
+                to="/library"
+                className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+              >
                 <span className="nav-icon">📁</span>
-                <span>壁纸库</span>
+                <span className="nav-text">壁纸库</span>
               </NavLink>
             </li>
             <li>
-              <NavLink to="/settings" className={({ isActive }) => isActive ? 'active' : ''}>
+              <NavLink
+                to="/settings"
+                className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+              >
                 <span className="nav-icon">⚙️</span>
-                <span>设置</span>
+                <span className="nav-text">设置</span>
               </NavLink>
             </li>
           </ul>
