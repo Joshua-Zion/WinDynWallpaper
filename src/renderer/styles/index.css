@@ -1094,6 +1094,7 @@ button {
    14. 设置页面
    ───────────────────────────────────────────────────────────────────*/
 .settings-page {
+
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
@@ -1155,10 +1156,10 @@ button {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-out);
-  padding: var(--space-md);
+  padding: var(--space-sm) var(--space-sm) 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: 0;
 }
 
 .settings-list {
@@ -1175,11 +1176,19 @@ button {
   border-radius: var(--radius-md);
   gap: var(--space-lg);
   transition: background var(--transition-fast);
-  border-bottom: 1px solid var(--border-light);
+  position: relative;
+  margin-bottom: var(--space-sm);
 }
 
-.setting-item:last-child {
-  border-bottom: none;
+.setting-item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  bottom: calc(var(--space-sm) / -2);
+  left: var(--space-lg);
+  right: var(--space-lg);
+  height: 1px;
+  background: var(--border-dark);
+  pointer-events: none;
 }
 
 .setting-item:hover {
@@ -1618,6 +1627,19 @@ button {
   padding: var(--space-md);
   border-radius: var(--radius-md);
   transition: background var(--transition-fast);
+  position: relative;
+  margin-bottom: var(--space-sm);
+}
+
+.dep-item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  bottom: calc(var(--space-sm) / -2);
+  left: var(--space-md);
+  right: var(--space-md);
+  height: 1px;
+  background: var(--border-dark);
+  pointer-events: none;
 }
 
 .dep-item:hover {
