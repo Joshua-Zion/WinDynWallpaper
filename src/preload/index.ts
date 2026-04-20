@@ -28,5 +28,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   repairDependency: (dep) => ipcRenderer.invoke('deps:repair', dep),
   // 开机自启
   getAutoLaunch: () => ipcRenderer.invoke('auto-launch:get'),
-  setAutoLaunch: (enabled) => ipcRenderer.invoke('auto-launch:set', enabled)
+  setAutoLaunch: (enabled) => ipcRenderer.invoke('auto-launch:set', enabled),
+  // 编辑功能
+  getDisplays: () => ipcRenderer.invoke('system:get-displays'),
+  cropWallpaper: (id: string, crop: { x: number, y: number, width: number, height: number }) => 
+    ipcRenderer.invoke('wallpaper:crop', id, crop)
 })

@@ -145,8 +145,11 @@ const WallpaperDetailPage: React.FC = () => {
   }
 
   const handleEdit = () => {
-    // 预留编辑功能入口
-    toast.info('编辑功能即将推出')
+    if (!wallpaper || wallpaper.type !== 'static') {
+      toast.info('只能编辑静态图片')
+      return
+    }
+    navigate(`/wallpaper/${id}/edit`)
   }
 
   const formatFileSize = (bytes: number): string => {

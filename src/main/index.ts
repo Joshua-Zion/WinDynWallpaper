@@ -342,6 +342,36 @@ function setupIpcHandlers(): void {
   // 开机自启
   ipcMain.handle('auto-launch:get', () => getAutoLaunch())
   ipcMain.handle('auto-launch:set', (_e, enabled: boolean) => setAutoLaunch(enabled))
+
+  // 系统信息
+  ipcMain.handle('system:get-displays', () => {
+    const { screen } = require('electron')
+    return screen.getAllDisplays().map((d: Electron.Display, index: number) => ({
+      id: d.id.toString(),
+      name: d.label || `显示器 ${index + 1}`,
+      width: d.bounds.width,
+      height: d.bounds.height,
+      scaleFactor: d.scaleFactor
+    }))
+  })
+
+  // 裁剪壁纸
+  ipcMain.handle('wallpaper:crop', async (_e, id: string, crop: { x: number, y: number, width: number, height: number }) => {
+    try {
+      const wallpaper = storeManager.getWallpaperById(id)
+      if (!wallpaper) {
+        return { success: false, message: '壁纸不存在' }
+      }
+      if (wallpaper.type !== 'static') {
+        return { success: false, message: '只能裁剪静态图片' }
+      }
+      
+      const result = await storeManager.cropWallpaper(id, crop)
+      return result
+    } catch (error: any) {
+      return { success: false, message: error.message }
+    }
+  })
 }
 
 /** 获取开机自启状态 */

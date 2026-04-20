@@ -644,4 +644,69 @@ export class StoreManager {
   getCurrentWallpaperId(): string | null {
     return this.config.currentWallpaperId || null
   }
+
+  /** 裁剪壁纸 */
+  async cropWallpaper(
+    id: string, 
+    crop: { x: number; y: number; width: number; height: number }
+  ): Promise<{ success: boolean; message: string }> {
+    const wallpaper = this.getWallpaperById(id)
+    if (!wallpaper) {
+      return { success: false, message: '壁纸不存在' }
+    }
+
+    try {
+      // 使用 PowerShell 和 System.Drawing 进行裁剪
+      const escapedPath = wallpaper.localPath.replace(/\\/g, '\\\\').replace(/'/g, "\\'")
+      const psScript = `
+Add-Type -AssemblyName System.Drawing
+$img = [System.Drawing.Image]::FromFile('${escapedPath}')
+$rect = New-Object System.Drawing.Rectangle(${crop.x}, ${crop.y}, ${crop.width}, ${crop.height})
+$cropped = $img.Clone($rect, $img.PixelFormat)
+$tempPath = [System.IO.Path]::GetTempFileName() + '.png'
+$cropped.Save($tempPath, [System.Drawing.Imaging.ImageFormat]::Png)
+$cropped.Dispose()
+$img.Dispose()
+Write-Host $tempPath
+`
+      
+      const result = execSync(`powershell -NoProfile -Command "${psScript}"`, { 
+        encoding: 'utf8',
+        maxBuffer: 10 * 1024 * 1024
+      }).toString().trim()
+      
+      const tempPath = result
+      
+      // 备份原文件
+      const backupPath = wallpaper.localPath + '.backup'
+      copyFileSync(wallpaper.localPath, backupPath)
+      
+      try {
+        // 替换原文件
+        unlinkSync(wallpaper.localPath)
+        copyFileSync(tempPath, wallpaper.localPath)
+        unlinkSync(tempPath)
+        unlinkSync(backupPath)
+        
+        // 更新索引中的尺寸信息
+        wallpaper.width = crop.width
+        wallpaper.height = crop.height
+        wallpaper.aspectRatio = `${crop.width}×${crop.height}`
+        wallpaper.resolutionTier = this.calculateResolutionTier(crop.width)
+        this.saveIndex()
+        
+        return { success: true, message: '裁剪成功' }
+      } catch (err: any) {
+        // 恢复备份
+        if (existsSync(backupPath)) {
+          copyFileSync(backupPath, wallpaper.localPath)
+          unlinkSync(backupPath)
+        }
+        throw err
+      }
+    } catch (err: any) {
+      console.error('裁剪壁纸失败:', err)
+      return { success: false, message: `裁剪失败: ${err.message}` }
+    }
+  }
 }

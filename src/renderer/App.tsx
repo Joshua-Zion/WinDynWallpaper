@@ -3,6 +3,7 @@ import { Routes, Route, NavLink } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import LibraryPage from './pages/LibraryPage'
 import WallpaperDetailPage from './pages/WallpaperDetailPage'
+import WallpaperEditPage from './pages/WallpaperEditPage'
 import SettingsPage from './pages/SettingsPage'
 import ToastContainer from './components/Toast'
 import './styles/index.css'
@@ -51,6 +52,8 @@ const App: React.FC = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/library" element={<LibraryPage />} />
             <Route path="/library/:id" element={<WallpaperDetailPage />} />
+            <Route path="/wallpaper/:id" element={<WallpaperDetailPage />} />
+            <Route path="/wallpaper/:id/edit" element={<WallpaperEditPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </main>

@@ -14,6 +14,7 @@ interface ElectronAPI {
   stopDynamicWallpaper: () => Promise<void>
   restoreDefault: () => Promise<{ success: boolean; message: string }>
   getCurrentWallpaper: () => Promise<{ path: string; type: 'static' | 'dynamic' | 'default' } | null>
+  setCurrentWallpaperId: (id: string | null) => Promise<{ success: boolean }>
   getWallpapers: () => Promise<Array<{
     id: string
     name: string
@@ -42,6 +43,7 @@ interface ElectronAPI {
   } | null>
   renameWallpaper: (id: string, newName: string) => Promise<{ success: boolean; message: string }>
   deleteWallpapers: (ids: string[]) => Promise<{ success: boolean; message: string; deletedCount: number }>
+  batchUpdateDimensions: () => Promise<{ success: boolean; message: string; updatedCount: number }>
   // 壁纸目录配置
   getWallpaperDir: () => Promise<{ currentDir: string; defaultDir: string; isDefault: boolean }>
   setWallpaperDir: (dir: string) => Promise<{ success: boolean; message: string; migratedCount: number }>
@@ -62,6 +64,15 @@ interface ElectronAPI {
   // 开机自启
   getAutoLaunch: () => Promise<boolean>
   setAutoLaunch: (enabled: boolean) => Promise<{ success: boolean; message: string }>
+  // 编辑功能
+  getDisplays: () => Promise<Array<{
+    id: string
+    name: string
+    width: number
+    height: number
+    scaleFactor: number
+  }>>
+  cropWallpaper: (id: string, crop: { x: number; y: number; width: number; height: number }) => Promise<{ success: boolean; message: string }>
 }
 
 declare global {
