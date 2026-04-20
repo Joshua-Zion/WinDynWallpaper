@@ -18,6 +18,7 @@
 | 系统托盘 | ✅ 完成 | 关闭按钮隐藏窗口，托盘菜单 |
 | 开机自启 | ✅ 完成 | 注册表 `HKCU\...\Run` |
 | 依赖检测与安装 | ✅ 完成 | winget 一键安装 mpv/ffmpeg，结果持久化 |
+| 壁纸编辑（裁剪） | ✅ 完成 | 支持自由裁剪、比例裁剪、显示器比例识别 |
 | 性能监控模块 | ⚠️ 已禁用 | IPC 轮询导致卡顿，已移除相关 UI 和 handler |
 | 多显示器支持 | ⏳ 待开发 | — |
 | 应用图标 | ⚠️ 临时 | 使用 proton-native.ico 占位，无正式图标 |
@@ -45,9 +46,11 @@ WinDynWallpaper/
 │   │   │   ├── Toast.tsx        # 全局提示组件
 │   │   │   └── ConfirmDialog.tsx # 自定义确认框
 │   │   ├── pages/
-│   │   │   ├── HomePage.tsx     # 首页（快捷设置）
-│   │   │   ├── LibraryPage.tsx  # 壁纸库（搜索/筛选/排序/批量操作）
-│   │   │   └── SettingsPage.tsx # 设置（自启 + 依赖管理 + 主题切换）
+│   │   │   ├── HomePage.tsx           # 首页（快捷设置）
+│   │   │   ├── LibraryPage.tsx        # 壁纸库（搜索/筛选/排序/批量操作）
+│   │   │   ├── WallpaperDetailPage.tsx # 壁纸详情
+│   │   │   ├── WallpaperEditPage.tsx   # 壁纸编辑（裁剪）
+│   │   │   └── SettingsPage.tsx       # 设置（自启 + 依赖管理 + 主题切换）
 │   │   └── styles/
 │   │       └── index.css        # 全局样式（新拟态 + 明暗主题）
 │   └── global.d.ts              # 根级类型声明
@@ -131,7 +134,23 @@ Windows 桌面层次
 
 **无声视频处理：** 如果视频有音轨，用 ffmpeg 提取纯视频轨道存入 `%APPDATA%/win-dyn-wallpaper/silent_<hash>.mp4`，避免 Windows 音量混合器出现 mpv。
 
-### 3. 壁纸库
+### 3. 壁纸编辑
+
+支持对壁纸进行裁剪编辑：
+- **自由裁剪**：任意拖拽选择裁剪区域
+- **比例裁剪**：预设比例（1:1、16:9、9:16、4:3、3:4、21:9、9:21）或自定义比例
+- **显示器推荐**：自动识别连接的显示器分辨率，一键应用对应比例
+- **交互体验**：
+  - 鼠标在图片上时隐藏提示气泡
+  - 半透明遮罩显示未选中区域
+  - 四角手柄支持调整选区大小
+  - 支持拖拽移动选区
+
+技术实现：
+- 前端：Canvas API 绘制图片和选区，ResizeObserver 自适应容器
+- 后端：PowerShell + System.Drawing 执行裁剪，保持原始图片质量
+
+### 4. 壁纸库
 
 存储在可配置目录（默认 `%APPDATA%/dyn-wallpaper/wallpapers/`）：
 - `wallpapers/` — 原始文件副本（SHA256 ID 命名）
@@ -153,19 +172,19 @@ Windows 桌面层次
 - 批量操作：批量选择、批量删除
 - 分页：每页显示 8 张壁纸
 
-### 4. 系统托盘
+### 5. 系统托盘
 
 - 点击关闭按钮 → 隐藏窗口（不退出），最小化到托盘
 - 托盘右键菜单：显示主面板 / 退出
 - 双击托盘图标：显示窗口
 
-### 5. 开机自启
+### 6. 开机自启
 
 通过注册表 `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` 实现。
 - 开发模式：注册 `electron.exe` 路径
 - 生产模式：注册打包后的 exe 路径
 
-### 6. 依赖检测
+### 7. 依赖检测
 
 检测 mpv 和 ffmpeg 是否安装，显示路径和版本。
 - 结果缓存在 `localStorage`（`windyn_deps_last_check`），进入设置页不自动重新检查
@@ -197,7 +216,7 @@ Windows 桌面层次
 - [ ] **多显示器支持**：WorkerW 窗口枚举时按屏幕坐标筛选
 - [ ] **中文路径验证**：完整测试含中文字符的壁纸文件路径
 - [x] **开机自启优化**：开发模式注册的是 `electron.exe`，可能影响实际使用体验（已添加开发模式提示）
-- [x] **壁纸库分页功能**：每页显示 8 张壁纸，支持翻页
+- [x] **壁纸库分页功能**：每页显示 12 张壁纸，支持翻页
 
 ### 低优先级
 - [ ] 定时自动切换壁纸
@@ -223,6 +242,9 @@ Windows 桌面层次
 | `store:set-wallpaper-dir` | renderer→main | 设置壁纸存储目录 |
 | `store:select-wallpaper-dir` | renderer→main | 选择壁纸存储目录对话框 |
 | `store:scan-storage-dir` | renderer→main | 扫描目录导入壁纸 |
+| `store:get-wallpaper-by-id` | renderer→main | 根据 ID 获取壁纸详情 |
+| `wallpaper:crop` | renderer→main | 裁剪壁纸 |
+| `system:get-displays` | renderer→main | 获取显示器信息 |
 | `dialog:open-file` | renderer→main | 打开文件选择对话框 |
 | `window:minimize` | renderer→main | 最小化窗口 |
 | `window:maximize` | renderer→main | 最大化/还原窗口 |
@@ -237,6 +259,21 @@ Windows 桌面层次
 ---
 
 ## 📝 更新日志
+
+### v0.2.1 (2026-04-20)
+
+**新增：**
+- 壁纸编辑功能：支持自由裁剪、比例裁剪、显示器比例识别
+- 壁纸编辑页：新拟态风格设计，左侧比例选择，右侧画布交互
+- 显示器比例识别：自动获取连接的显示器分辨率，一键应用对应比例
+- 壁纸库分页：每页显示 12 张壁纸（原为 8 张）
+- 壁纸详情页：新增编辑入口，优化布局和圆角样式
+
+**优化：**
+- 壁纸库页面：固定头部，内容区域独立滚动
+- 壁纸详情页：顶部和图片区域增加白色背景和圆角
+- 编辑页交互：修改自定义比例数字立即生效，无需点击按钮
+- 编辑页视觉：拖拽时隐藏气泡提示，半透明遮罩显示选区
 
 ### v0.2.0 (2026-04-17)
 
@@ -254,7 +291,7 @@ Windows 桌面层次
 - 窗口尺寸：默认和最小尺寸均为 1200×800
 - 侧边栏布局：简化 HomePage，优化 SettingsPage 分区结构
 - 依赖检查区域：优化按钮布局，文案修改
-- 壁纸库分页：调整间距消除 8 张壁纸时的滚动条
+- 壁纸库分页：每页显示 12 张，调整间距消除滚动条
 
 **修复：**
 - 分辨率枚举值：从 SD/HD/1K/2K/4K/8K 改为 <1K/1K/2K/4K/8K/>8K
