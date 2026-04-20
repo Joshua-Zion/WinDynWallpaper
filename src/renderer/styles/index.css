@@ -348,6 +348,31 @@ body {
   scrollbar-gutter: stable;
 }
 
+/* 壁纸库页面 - 固定头部布局 */
+.library-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.library-page-header {
+  flex-shrink: 0;
+  padding-bottom: var(--space-lg);
+}
+
+.library-page-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.library-page-content::-webkit-scrollbar {
+  display: none;
+}
+
 /*───────────────────────────────────────────────────────────────────
    7. 页面头部
    ───────────────────────────────────────────────────────────────────*/

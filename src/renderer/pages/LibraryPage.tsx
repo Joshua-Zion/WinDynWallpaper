@@ -19,7 +19,7 @@ interface WallpaperItem {
 
 type TabType = 'all' | 'static' | 'dynamic'
 
-const ITEMS_PER_PAGE = 8
+const ITEMS_PER_PAGE = 12
 
 const LibraryPage: React.FC = () => {
   const navigate = useNavigate()
