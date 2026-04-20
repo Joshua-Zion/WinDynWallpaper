@@ -352,7 +352,7 @@ body {
    7. 页面头部
    ─────────────────────────────────────────────────────────────────── */
 .page-header {
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-xl);
 }
 
 .page-title {
@@ -373,6 +373,109 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-md);
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   7.1 首页
+   ─────────────────────────────────────────────────────────────────── */
+.home-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  height: 100%;
+}
+
+.home-page .page-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: 0;
+}
+
+.home-page .page-header h1 {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.home-page .page-header .subtitle {
+  font-size: var(--text-base);
+  color: var(--text-tertiary);
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--space-lg);
+}
+
+.action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-xl) var(--space-lg);
+  border-radius: var(--radius-lg);
+  border: none;
+  cursor: pointer;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-out);
+  transition: all var(--transition-normal);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-out-lg);
+  background: var(--bg-card-hover);
+}
+
+.action-card:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-in);
+}
+
+.action-card:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+.action-card.primary .action-icon {
+  color: var(--accent);
+}
+
+.action-card.danger .action-icon {
+  color: var(--danger);
+}
+
+.action-card h3 {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.action-icon {
+  font-size: 36px;
+  line-height: 1;
+  transition: transform var(--transition-normal);
+}
+
+.action-card:hover .action-icon {
+  transform: scale(1.08);
+}
+
+.action-desc {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin: 0;
+  line-height: 1.4;
 }
 
 /* ───────────────────────────────────────────────────────────────────
