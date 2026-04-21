@@ -6,64 +6,7 @@ import { existsSync, writeFileSync, readFileSync } from 'fs'
 import { createHash } from 'crypto'
 import { findFfmpegPath, findMpvPath } from './utils'
 
-// edge-js native 模块在 app.asar.unpacked 中（asar 不支持 .node 直接加载）
-// electron-builder 会将 asarUnpack 规则匹配的文件解压到 app.asar.unpacked
-// Electron 31.x 内置 Node.js v20，对应 v20 子目录
-process.env.EDGE_NATIVE = join(
-  process.resourcesPath,
-  'app.asar.unpacked',
-  'node_modules',
-  'edge-js',
-  'lib',
-  'native',
-  'win32',
-  'x64',
-  '20',
-  'edge_nativeclr.node'
-)
-import * as edge from 'edge-js'
-
 const execAsync = promisify(exec)
-
-// edge-js: 在进程内调用 Win32 API，绕过 PowerShell Window Station 隔离问题
-const getWorkerWHwndEdge = edge.func(`
-  using System;
-  using System.Runtime.InteropServices;
-  using System.Text;
-  using System.Threading.Tasks;
-  public class Startup {
-    [DllImport("user32.dll")]
-    public static extern IntPtr GetShellWindow();
-    [DllImport("user32.dll", CharSet=CharSet.Auto)]
-    public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
-    [DllImport("user32.dll")]
-    public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
-    [DllImport("user32.dll", CharSet=CharSet.Auto)]
-    public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-    [DllImport("user32.dll")]
-    public static extern bool IsWindowVisible(IntPtr hWnd);
-    public async Task<object> Invoke(object input) {
-      IntPtr progman = GetShellWindow();
-      if (progman == IntPtr.Zero) return "ERROR:Progman";
-      SendMessage(progman, 0x052C, IntPtr.Zero, IntPtr.Zero);
-      await Task.Delay(300);
-      IntPtr workerW = IntPtr.Zero;
-      var sb = new StringBuilder(256);
-      IntPtr child = IntPtr.Zero;
-      while (true) {
-        child = FindWindowEx(progman, child, null, null);
-        if (child == IntPtr.Zero) break;
-        GetClassName(child, sb, 256);
-        if (sb.ToString() == "WorkerW" && IsWindowVisible(child)) {
-          workerW = child;
-          break;
-        }
-      }
-      if (workerW == IntPtr.Zero) return "ERROR:WorkerW";
-      return workerW.ToInt64().ToString();
-    }
-  }
-`)
 
 /**
  * Windows 壁纸管理器
@@ -286,18 +229,26 @@ public class WP {
 
   /**
    * 获取 WorkerW 窗口句柄
-   * 使用 edge-js 在主进程内直接调用 Win32 API，绕过 PowerShell 子进程 Window Station 隔离问题
+   * 使用编译好的 GetWorkerW.exe（.NET Framework C#）调用 Win32 API
+   * 绕过 PowerShell 子进程 Window Station 隔离问题
    */
   private async getWorkerWHwnd(): Promise<string | null> {
-    return new Promise((resolve) => {
-      getWorkerWHwndEdge(null, (err: Error | null, hwnd: any) => {
-        if (err || !hwnd || typeof hwnd !== 'string' || hwnd.startsWith('ERROR:')) {
-          resolve(null)
-          return
-        }
-        resolve(String(hwnd))
-      })
-    })
+    try {
+      // 查找 GetWorkerW.exe 路径
+      const paths = [
+        join(__dirname, '..', '..', 'resources', 'bin', 'GetWorkerW.exe'),
+        join(process.resourcesPath || '', 'bin', 'GetWorkerW.exe'),
+      ]
+      let exePath = paths.find(p => existsSync(p))
+      if (!exePath) return null
+
+      const { stdout } = await execAsync(`"${exePath}"`, { timeout: 5000 })
+      const hwnd = stdout.trim()
+      if (!hwnd || isNaN(Number(hwnd))) return null
+      return hwnd
+    } catch {
+      return null
+    }
   }
 
   /** 恢复默认壁纸 */

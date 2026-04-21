@@ -13,7 +13,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "edge-js": "^25.0.1",
     "electron-store": "^8.2.0",
     "iconv-lite": "^0.7.2",
     "react": "^18.3.1",
@@ -23,7 +22,6 @@
   "devDependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
-    "@electron/rebuild": "^4.0.3",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
@@ -45,9 +43,6 @@
     "directories": {
       "output": "release"
     },
-    "asarUnpack": [
-      "node_modules/edge-js/lib/native/**/*"
-    ],
     "files": [
       "dist/**/*",
       "resources/**/*"
@@ -68,6 +63,12 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "shortcutName": "DynWallpaper"
-    }
+    },
+    "extraResources": [
+      {
+        "from": "resources/bin/GetWorkerW.exe",
+        "to": "bin/GetWorkerW.exe"
+      }
+    ]
   }
 }
