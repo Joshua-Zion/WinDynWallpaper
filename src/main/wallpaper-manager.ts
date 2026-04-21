@@ -5,6 +5,22 @@ import { app, BrowserWindow, screen } from 'electron'
 import { existsSync, writeFileSync, readFileSync } from 'fs'
 import { createHash } from 'crypto'
 import { findFfmpegPath, findMpvPath } from './utils'
+
+// edge-js native 模块在 app.asar.unpacked 中（asar 不支持 .node 直接加载）
+// electron-builder 会将 asarUnpack 规则匹配的文件解压到 app.asar.unpacked
+// Electron 31.x 内置 Node.js v20，对应 v20 子目录
+process.env.EDGE_NATIVE = join(
+  process.resourcesPath,
+  'app.asar.unpacked',
+  'node_modules',
+  'edge-js',
+  'lib',
+  'native',
+  'win32',
+  'x64',
+  '20',
+  'edge_nativeclr.node'
+)
 import * as edge from 'edge-js'
 
 const execAsync = promisify(exec)

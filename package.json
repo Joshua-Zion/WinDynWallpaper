@@ -23,6 +23,7 @@
   "devDependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
+    "@electron/rebuild": "^4.0.3",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
@@ -44,6 +45,9 @@
     "directories": {
       "output": "release"
     },
+    "asarUnpack": [
+      "node_modules/edge-js/lib/native/**/*"
+    ],
     "files": [
       "dist/**/*",
       "resources/**/*"
