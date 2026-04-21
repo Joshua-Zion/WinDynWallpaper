@@ -5,8 +5,49 @@ import { app, BrowserWindow, screen } from 'electron'
 import { existsSync, writeFileSync, readFileSync } from 'fs'
 import { createHash } from 'crypto'
 import { findFfmpegPath, findMpvPath } from './utils'
+import * as edge from 'edge-js'
 
 const execAsync = promisify(exec)
+
+// edge-js: 在进程内调用 Win32 API，绕过 PowerShell Window Station 隔离问题
+const getWorkerWHwndEdge = edge.func(`
+  using System;
+  using System.Runtime.InteropServices;
+  using System.Text;
+  using System.Threading.Tasks;
+  public class Startup {
+    [DllImport("user32.dll")]
+    public static extern IntPtr GetShellWindow();
+    [DllImport("user32.dll", CharSet=CharSet.Auto)]
+    public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+    [DllImport("user32.dll")]
+    public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+    [DllImport("user32.dll", CharSet=CharSet.Auto)]
+    public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+    [DllImport("user32.dll")]
+    public static extern bool IsWindowVisible(IntPtr hWnd);
+    public async Task<object> Invoke(object input) {
+      IntPtr progman = GetShellWindow();
+      if (progman == IntPtr.Zero) return "ERROR:Progman";
+      SendMessage(progman, 0x052C, IntPtr.Zero, IntPtr.Zero);
+      await Task.Delay(300);
+      IntPtr workerW = IntPtr.Zero;
+      var sb = new StringBuilder(256);
+      IntPtr child = IntPtr.Zero;
+      while (true) {
+        child = FindWindowEx(progman, child, null, null);
+        if (child == IntPtr.Zero) break;
+        GetClassName(child, sb, 256);
+        if (sb.ToString() == "WorkerW" && IsWindowVisible(child)) {
+          workerW = child;
+          break;
+        }
+      }
+      if (workerW == IntPtr.Zero) return "ERROR:WorkerW";
+      return workerW.ToInt64().ToString();
+    }
+  }
+`)
 
 /**
  * Windows 壁纸管理器
@@ -229,73 +270,18 @@ public class WP {
 
   /**
    * 获取 WorkerW 窗口句柄
-   * 方法：找到 Progman → 发送 0x052C 消息创建 WorkerW → 枚举顶层窗口找到含 SHELLDLL_DefView 的 WorkerW
+   * 使用 edge-js 在主进程内直接调用 Win32 API，绕过 PowerShell 子进程 Window Station 隔离问题
    */
   private async getWorkerWHwnd(): Promise<string | null> {
-    const script = `
-Add-Type -TypeDefinition @"
-using System;
-using System.Runtime.InteropServices;
-using System.Text;
-public class WinAPI {
-  [DllImport("user32.dll", CharSet = CharSet.Auto)]
-  public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
-  [DllImport("user32.dll", CharSet = CharSet.Auto)]
-  public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
-  [DllImport("user32.dll")]
-  public static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
-  [DllImport("user32.dll")]
-  public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
-  [DllImport("user32.dll", CharSet = CharSet.Auto)]
-  public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-  public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
-}
-"@
-
-# 1. 找到 Progman 窗口
-$progman = [WinAPI]::FindWindow("Progman", $null)
-if ($progman -eq [IntPtr]::Zero) {
-  Write-Output ""
-  exit
-}
-
-# 2. 给 Progman 发送 0x052C 消息，触发系统创建 WorkerW 窗口
-[WinAPI]::SendMessage($progman, 0x052C, [IntPtr]::Zero, [IntPtr]::Zero) | Out-Null
-Start-Sleep -Milliseconds 200
-
-# 3. 枚举所有顶层窗口，找到包含 SHELLDLL_DefView 子窗口的 WorkerW
-$script:workerW = [IntPtr]::Zero
-$findWorkerW = [WinAPI+EnumWindowsProc]{
-  param($hwnd, $lParam)
-  $sb = New-Object System.Text.StringBuilder 256
-  [WinAPI]::GetClassName($hwnd, $sb, 256) | Out-Null
-  if ($sb.ToString() -eq "WorkerW") {
-    $shellView = [WinAPI]::FindWindowEx($hwnd, [IntPtr]::Zero, "SHELLDLL_DefView", $null)
-    if ($shellView -ne [IntPtr]::Zero) {
-      $script:workerW = $hwnd
-      return $false
-    }
-  }
-  return $true
-}
-[WinAPI]::EnumWindows($findWorkerW, [IntPtr]::Zero) | Out-Null
-
-if ($script:workerW -ne [IntPtr]::Zero) {
-  Write-Output $script:workerW
-} else {
-  Write-Output ""
-}
-`
-    const encoded = Buffer.from(script, 'utf16le').toString('base64')
-    try {
-      const { stdout } = await execAsync(`powershell -NoProfile -EncodedCommand ${encoded}`, {
-        timeout: 15000
+    return new Promise((resolve) => {
+      getWorkerWHwndEdge(null, (err: Error | null, hwnd: any) => {
+        if (err || !hwnd || typeof hwnd !== 'string' || hwnd.startsWith('ERROR:')) {
+          resolve(null)
+          return
+        }
+        resolve(String(hwnd))
       })
-      const hwnd = stdout.trim()
-      return hwnd && hwnd !== '0' ? hwnd : null
-    } catch (e) {
-      return null
-    }
+    })
   }
 
   /** 恢复默认壁纸 */
