@@ -391,12 +391,11 @@ function getAutoLaunch(): boolean {
 function setAutoLaunch(enabled: boolean): { success: boolean; message: string } {
   try {
     if (enabled) {
-      // 获取可执行文件路径
+      // 获取可执行文件路径（生产模式使用 --hidden 参数后台启动）
       const appPath = is.dev
-        ? process.execPath  // 开发模式：electron.exe（注意：开发模式下开机自启会启动 electron.exe，可能无法正常运行）
-        : app.getPath('exe')  // 生产模式：打包后的 exe
+        ? process.execPath
+        : `"${app.getPath('exe')}" --hidden`
 
-      // 添加注册表项
       execSync(`reg add "${AUTO_LAUNCH_REG_KEY}" /v "${APP_NAME}" /t REG_SZ /d "${appPath}" /f`, {
         encoding: 'utf-8',
         shell: 'cmd.exe'
@@ -418,25 +417,18 @@ function setAutoLaunch(enabled: boolean): { success: boolean; message: string } 
 /** 创建系统托盘 */
 function createTray(): void {
   // 托盘图标路径
-  const iconPaths = [
-    is.dev ? join(__dirname, '..', '..', 'resources', 'icon.ico') : join(process.resourcesPath, 'icon.ico'),
-    join(__dirname, '..', '..', 'resources', 'icon.png'),
-    join(process.resourcesPath, 'icon.png')
-  ]
-  
+  const devPath = join(__dirname, '..', '..', 'resources', 'icon.ico')
+  const prodPath = join(process.resourcesPath!, 'resources', 'icon.ico')
+
   let icon: nativeImage | null = null
-  for (const p of iconPaths) {
-    if (existsSync(p)) {
-      icon = nativeImage.createFromPath(p)
-      break
-    }
+  if (!is.dev && existsSync(prodPath)) {
+    icon = nativeImage.createFromPath(prodPath)
+  } else if (is.dev && existsSync(devPath)) {
+    icon = nativeImage.createFromPath(devPath)
   }
-  
-  // 如果没有图标文件，创建一个简单的 16x16 图标
+
+  // 回退：纯色图标（16x16 PNG base64）
   if (!icon || icon.isEmpty()) {
-    // Windows 上 nativeImage.createFromBuffer() 不支持 raw RGBA，
-    // 使用 data URL 格式创建简单的蓝色图标
-    // 这是一个 16x16 纯蓝色 PNG 的 base64 编码
     const blueIconBase64 = 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAO0lEQVQ4y2P4//8/AwMDA8N/BgYGBob/DAwMDP8ZGBgYGBgY/jMwMDAwMPxnYGDIYWBgYPjPwMDAwPCfgYGB4T/DfwYGBgZG/BoAAQAA3/8DwOqK5hYAAAAASUVORK5CYII='
     icon = nativeImage.createFromDataURL(`data:image/png;base64,${blueIconBase64}`)
   }
@@ -488,6 +480,13 @@ app.whenReady().then(() => {
   setupIpcHandlers()
   createWindow()
   createTray()  // 创建系统托盘
+
+  // 检查是否为开机自启后台模式（--hidden 参数）
+  const isHiddenLaunch = process.argv.includes('--hidden')
+  if (!isHiddenLaunch) {
+    mainWindow?.show()
+  }
+
   // 恢复动态壁纸
   wallpaperManager.restoreDynamicWallpaper()
 
