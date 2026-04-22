@@ -52,8 +52,7 @@ export class DesktopOrganizer {
       const icons: DesktopIcon[] = JSON.parse(result.trim())
       return icons
     } catch (e: any) {
-      console.error('获取桌面图标失败:', e.message)
-      throw new Error(`获取桌面图标失败: ${e.message}`)
+      return { success: false, message: `获取桌面图标失败: ${e.message}` }
     }
   }
 
@@ -73,7 +72,6 @@ export class DesktopOrganizer {
       const res: OrganizeResult = JSON.parse(result.trim())
       return res
     } catch (e: any) {
-      console.error('整理失败:', e)
       return { success: false, message: `整理失败: ${e.message}` }
     }
   }
@@ -94,7 +92,6 @@ export class DesktopOrganizer {
       const res: OrganizeResult = JSON.parse(result.trim())
       return res
     } catch (e: any) {
-      console.error('恢复失败:', e)
       return { success: false, message: `恢复失败: ${e.message}` }
     }
   }
