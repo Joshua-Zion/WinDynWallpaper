@@ -69,6 +69,10 @@
       {
         "from": "resources/bin/GetWorkerW.exe",
         "to": "bin/GetWorkerW.exe"
+      },
+      {
+        "from": "resources/bin/DesktopOrganizer.ps1",
+        "to": "bin/DesktopOrganizer.ps1"
       }
     ]
   }

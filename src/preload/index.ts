@@ -32,5 +32,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // 编辑功能
   getDisplays: () => ipcRenderer.invoke('system:get-displays'),
   cropWallpaper: (id: string, crop: { x: number, y: number, width: number, height: number }) => 
-    ipcRenderer.invoke('wallpaper:crop', id, crop)
+    ipcRenderer.invoke('wallpaper:crop', id, crop),
+  // 桌面整理
+  organizeDesktop: () => ipcRenderer.invoke('desktop:organize'),
+  restoreDesktopLayout: () => ipcRenderer.invoke('desktop:restore-layout'),
+  getDesktopIcons: () => ipcRenderer.invoke('desktop:get-icons')
 })

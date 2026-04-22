@@ -73,6 +73,10 @@ interface ElectronAPI {
     scaleFactor: number
   }>>
   cropWallpaper: (id: string, crop: { x: number; y: number; width: number; height: number }) => Promise<{ success: boolean; message: string }>
+  // 桌面整理
+  organizeDesktop: () => Promise<{ success: boolean; message: string; stats?: Record<string, number> }>
+  restoreDesktopLayout: () => Promise<{ success: boolean; message: string }>
+  getDesktopIcons: () => Promise<{ success: boolean; icons?: any[]; message?: string }>
 }
 
 declare global {

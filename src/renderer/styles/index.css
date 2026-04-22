@@ -475,6 +475,14 @@ body {
   color: var(--accent);
 }
 
+.action-card.accent .action-icon {
+  color: var(--accent);
+}
+
+.action-card.secondary .action-icon {
+  color: var(--text-secondary);
+}
+
 .action-card.danger .action-icon {
   color: var(--danger);
 }

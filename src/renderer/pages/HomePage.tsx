@@ -139,6 +139,20 @@ const HomePage: React.FC = () => {
     setIsLoading(false)
   }
 
+  const handleOrganizeDesktop = async () => {
+    setIsLoading(true)
+    const res = await window.electronAPI.organizeDesktop()
+    toast[res.success ? 'success' : 'error'](res.message)
+    setIsLoading(false)
+  }
+
+  const handleRestoreDesktopLayout = async () => {
+    setIsLoading(true)
+    const res = await window.electronAPI.restoreDesktopLayout()
+    toast[res.success ? 'success' : 'error'](res.message)
+    setIsLoading(false)
+  }
+
   const handleCloseImportProgress = () => {
     setIsImporting(false)
     setImportTasks([])
@@ -174,11 +188,31 @@ const HomePage: React.FC = () => {
         </button>
 
         <button
+          className="action-card accent"
+          onClick={handleOrganizeDesktop}
+          disabled={isLoading || isImporting}
+        >
+          <div className="action-icon">✨</div>
+          <h3>一键整理桌面</h3>
+          <p className="action-desc">自动分类整理桌面图标</p>
+        </button>
+
+        <button
+          className="action-card secondary"
+          onClick={handleRestoreDesktopLayout}
+          disabled={isLoading || isImporting}
+        >
+          <div className="action-icon">↩️</div>
+          <h3>恢复桌面布局</h3>
+          <p className="action-desc">恢复整理前的桌面图标位置</p>
+        </button>
+
+        <button
           className="action-card danger"
           onClick={handleRestoreDefault}
           disabled={isLoading || isImporting}
         >
-          <div className="action-icon">↩️</div>
+          <div className="action-icon">🗑️</div>
           <h3>恢复默认壁纸</h3>
           <p className="action-desc">恢复 Windows 系统原始壁纸</p>
         </button>

@@ -3,6 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { WallpaperManager } from './wallpaper-manager'
 import { StoreManager } from './store-manager'
+import { DesktopOrganizer } from './desktop-organizer'
 import { findFfmpegPath, findMpvPath } from './utils'
 import { execSync } from 'child_process'
 import { existsSync, createWriteStream } from 'fs'
@@ -43,6 +44,7 @@ let mainWindow: BrowserWindow | null = null
 let tray: Tray | null = null
 let wallpaperManager: WallpaperManager
 let storeManager: StoreManager
+let desktopOrganizer: DesktopOrganizer
 
 /** 开机自启注册表路径 */
 const AUTO_LAUNCH_REG_KEY = 'HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'
@@ -386,6 +388,24 @@ function setupIpcHandlers(): void {
       return { success: false, message: error.message }
     }
   })
+
+  // 桌面整理
+  ipcMain.handle('desktop:organize', async () => {
+    return desktopOrganizer.organize()
+  })
+
+  ipcMain.handle('desktop:restore-layout', async () => {
+    return desktopOrganizer.restore()
+  })
+
+  ipcMain.handle('desktop:get-icons', async () => {
+    try {
+      const icons = desktopOrganizer.getDesktopIcons()
+      return { success: true, icons }
+    } catch (e: any) {
+      return { success: false, message: e.message }
+    }
+  })
 }
 
 /** 获取开机自启状态 */
@@ -491,6 +511,7 @@ app.whenReady().then(() => {
 
   wallpaperManager = new WallpaperManager()
   storeManager = new StoreManager()
+  desktopOrganizer = new DesktopOrganizer()
   setupIpcHandlers()
   createWindow()
   createTray()  // 创建系统托盘
