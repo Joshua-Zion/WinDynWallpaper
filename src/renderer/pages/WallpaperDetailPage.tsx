@@ -46,6 +46,13 @@ const WallpaperDetailPage: React.FC = () => {
     loadCurrentWallpaper()
   }, [id])
 
+  // 每次页面可见时重新获取当前壁纸标识
+  useEffect(() => {
+    const onVisible = () => loadCurrentWallpaper()
+    document.addEventListener('visibilitychange', onVisible)
+    return () => document.removeEventListener('visibilitychange', onVisible)
+  }, [])
+
   const loadCurrentWallpaper = async () => {
     try {
       const current = await window.electronAPI.getCurrentWallpaper()

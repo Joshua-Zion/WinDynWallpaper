@@ -72,6 +72,13 @@ const LibraryPage: React.FC = () => {
     loadCurrentWallpaper()
   }, [])
 
+  // 每次页面可见时重新获取当前壁纸标识
+  useEffect(() => {
+    const onVisible = () => loadCurrentWallpaper()
+    document.addEventListener('visibilitychange', onVisible)
+    return () => document.removeEventListener('visibilitychange', onVisible)
+  }, [])
+
   useEffect(() => {
     setCurrentPage(1)
   }, [activeTab, searchKeyword, sortBy, sortOrder, filterResolution])
