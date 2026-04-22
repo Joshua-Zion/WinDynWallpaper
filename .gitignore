@@ -36,3 +36,7 @@ shadertmp/
 install-gbk.txt
 release/
 release2/
+
+# Task artifacts
+task-summary_*.md
+*_summary*.md
