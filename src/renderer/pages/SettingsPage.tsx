@@ -313,7 +313,7 @@ const SettingsPage: React.FC = () => {
           </div>
           <div className="about-row">
             <div className="about-label">版本</div>
-            <div className="about-value">v0.2.1</div>
+            <div className="about-value">v{import.meta.env.PACKAGE_VERSION}</div>
           </div>
           <div className="about-row">
             <div className="about-label">作者</div>

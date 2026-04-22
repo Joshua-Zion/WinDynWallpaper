@@ -233,22 +233,28 @@ public class WP {
    * 绕过 PowerShell 子进程 Window Station 隔离问题
    */
   private async getWorkerWHwnd(): Promise<string | null> {
-    try {
-      // 查找 GetWorkerW.exe 路径
-      const paths = [
-        join(__dirname, '..', '..', 'resources', 'bin', 'GetWorkerW.exe'),
-        join(process.resourcesPath || '', 'bin', 'GetWorkerW.exe'),
-      ]
-      let exePath = paths.find(p => existsSync(p))
-      if (!exePath) return null
+    // 尝试路径
+    const paths = [
+      join(process.resourcesPath || '', 'bin', 'GetWorkerW.exe'),
+      join(__dirname, '..', '..', 'resources', 'bin', 'GetWorkerW.exe'),
+    ]
+    const exePath = paths.find(p => existsSync(p))
+    if (!exePath) return null
 
-      const { stdout } = await execAsync(`"${exePath}"`, { timeout: 5000 })
-      const hwnd = stdout.trim()
-      if (!hwnd || isNaN(Number(hwnd))) return null
-      return hwnd
-    } catch {
-      return null
+    // 重试机制：WorkerW 可能需要一点时间才出现
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const { stdout } = await execAsync(`"${exePath}"`, { timeout: 8000 })
+        const hwnd = stdout.trim()
+        if (hwnd && !isNaN(Number(hwnd))) {
+          return hwnd
+        }
+      } catch { /* 重试 */ }
+      if (attempt < 2) {
+        await new Promise(resolve => setTimeout(resolve, 500))
+      }
     }
+    return null
   }
 
   /** 恢复默认壁纸 */

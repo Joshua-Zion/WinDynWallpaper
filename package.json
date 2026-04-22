@@ -41,7 +41,7 @@
     "appId": "com.dynwallpaper.app",
     "productName": "DynWallpaper",
     "directories": {
-      "output": "release"
+      "output": "release2"
     },
     "files": [
       "dist/**/*",
@@ -62,7 +62,8 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "shortcutName": "DynWallpaper"
+      "shortcutName": "DynWallpaper",
+      "include": "installer.nsh"
     },
     "extraResources": [
       {

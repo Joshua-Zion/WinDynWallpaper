@@ -18,6 +18,20 @@ console.log = (...args: any[]) => {
 // 台式机多 GPU 环境修复：优先禁用硬件加速
 app.disableHardwareAcceleration()
 
+// 单实例锁
+const gotLock = app.requestSingleInstanceLock()
+if (!gotLock) {
+  app.quit()
+} else {
+  app.on('second-instance', () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.show()
+      mainWindow.focus()
+    }
+  })
+}
+
 // 扩展 App 类型以支持 isQuitting 标志
 declare module 'electron' {
   interface App {

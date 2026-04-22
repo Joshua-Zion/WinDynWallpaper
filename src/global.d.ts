@@ -79,6 +79,10 @@ declare global {
   interface Window {
     electronAPI: ElectronAPI
   }
+
+  interface ImportMetaEnv {
+    PACKAGE_VERSION: string
+  }
 }
 
 export {}
